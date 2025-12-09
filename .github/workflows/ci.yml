@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        env:
+          SECRET_KEY: test-secret-key-for-ci
+          DEBUG: 'True'
+          DATABASE_URL: sqlite:///ci-test-db.sqlite3
+        run: |
+          python manage.py test
+      - name: Collect static (for build check)
+        run: python manage.py collectstatic --noinput
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: django-build
+          path: |
+            staticfiles/
+            requirements.txt
+            manage.py
