@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r 3.2-crud/stocks_products/requirements.txt
 
       - name: Collect static (for build check)
         run: python manage.py collectstatic --noinput
